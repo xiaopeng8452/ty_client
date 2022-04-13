@@ -1,0 +1,73 @@
+{
+	"bsonType": "object",
+	"required": ["name", "sp_id", "level", "describe", "area", "type"],
+	"permission": {
+		"read": true,
+		"create": false,
+		"update": false,
+		"delete": false
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"name": {
+			"bsonType": "string",
+			"description": "服务人员名称",
+			"title": "人员名称",
+			"trim": "both"
+		},
+		"sp_id": {
+			"bsonType": "string",
+			"description": "服务人员id"
+		},
+		"level": {
+			"bsonType": "array",
+			"description": "服务人员等级,不可重复",
+			"title": "人员等级",
+			"enum": [{
+				"value": 1,
+				"text": "管理新手"
+			}, {
+				"value": 2,
+				"text": "管理熟手"
+			}, {
+				"value": 3,
+				"text": "管理大师"
+			}]
+		},
+		"describe": {
+			"bsonType": "string",
+			"description": "服务人员基本信息",
+			"title": "信息描述",
+			"trim": "both"
+		},
+		"avatar": {
+			"bsonType": "string",
+			"title": "头像地址",
+			"description": "头像地址",
+			"trim": "both"
+		},
+		"area": {
+			"bsonType": "string",
+			"description": "服务人员所在区域",
+			"title": "所在区域",
+			"trim": "both"
+		},
+		"type": {
+			"bsonType": "array",
+			"description": "当前人员可服务类型",
+			"title": "服务类型",
+			"enum": [{
+				"value": 1,
+				"text": "护理"
+			}, {
+				"value": 2,
+				"text": "美容"
+			}, {
+				"value": 3,
+				"text": "养生"
+			}]
+		}
+	}
+}

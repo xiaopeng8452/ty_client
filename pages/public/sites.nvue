@@ -1,0 +1,348 @@
+<template>
+	<view class="warp">
+		<map id="map" class="map" theme="normal" :include-points="includePoints" :markers="markers" :scale="scale"
+			min-scale="3" max-scale="22" :latitude="latitude" :longitude="longitude" @markertap="handleMarker"
+			@labeltap="handleMarker" @regionchange="regionChange"></map>
+		<scroll-view class="lists" scroll-y>
+			<view class="list" :class="{active: selectSiteId == list.id}" v-for="(list,index) in sites" :key="index"
+				@click="changeSite(list.id)">
+				<view class="list_l">
+					<text class="name">{{list.name}}</text>
+					<view class="u-flex line line-address">
+						<view>
+							<uni-icons type="star" size="30"></uni-icons>
+						</view>
+						<text class="address">{{list.address}}</text>
+					</view>
+					<view class="u-flex line">
+						<view>
+							<uni-icons type="star" size="30"></uni-icons>
+						</view>
+						<text class="time">营业时间：{{list.times}}</text>
+					</view>
+				</view>
+				<view class="list_r">
+					<text class="go">去下单</text>
+					<text class="distance">{{'距离：'+ list.distanceStr}}</text>
+				</view>
+			</view>
+		</scroll-view>
+		<view>
+			<view class="submit" hover-class="submit-hover" @click="submit">
+				<text class="white">确认</text>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				source: 0,
+				// 选择站点模块
+				latitude: '32.059344',
+				longitude: '118.796624',
+				scale: 13,
+				sites: [],
+				selectSiteId: '',
+				includePoints: [],
+				markers: [],
+				buffetInfo: {
+					name: '张三',
+					address: '',
+					proName: '江苏省',
+					cityName: '南京市',
+					countyName: '建邺区',
+					proId: '11',
+					cityId: '4530',
+					countyId: '4533',
+					addr: '今日家园丹桂居10栋2单元403'
+				}
+			}
+		},
+		async onLoad(options) {
+			console.log(options.source)
+			this.source = options.source
+			// 获取站点数据
+			this.sites = getApp().globalData.sites
+			// 初始化地图
+			this._map = new plus.maps.Map("map");
+			await this.addMarkers(this.sites, true)
+			// await this.getLocation()
+			await this.geoCode()
+		},
+		onBackPress() {
+			if (this.source == 1 && !this.sites.length) {
+				this.$api.prePage().siteInfo = {};
+			}
+		},
+		methods: {
+			// 获取定位
+			getLocation() {
+				uni.showLoading({
+					title: '地址获取中...'
+				})
+				uni.getLocation({
+					type: 'gcj02',
+					geocode: true,
+					success: (res) => {
+						// 打开地图预览
+						this.latitude = res.latitude
+						this.longitude = res.longitude
+						this.addMarkers([{
+							name: '当前位置',
+							latitude: res.latitude,
+							longitude: res.longitude
+						}], false);
+						this.distance()
+						// this.moveToLocation(res.latitude, res.longitude);
+					},
+					fail: (res) => {
+						console.log(res)
+					},
+					complete: (res) => {
+						uni.hideLoading()
+					}
+				});
+			},
+			// 获取指定配送位置
+			geoCode() {
+				let address = this.buffetInfo.proName + this.buffetInfo.cityName + this.buffetInfo.countyName + this.buffetInfo.addr;
+				plus.maps.Map.geocode(address, {
+						city: this.buffetInfo.cityName,
+						coordType: 'gcj02'
+					}, (event)=> {
+						// 成功
+						getApp().globalData.longitude = event.coord.longitude
+						getApp().globalData.latitude = event.coord.latitude
+						this.latitude = event.coord.latitude
+						this.longitude = event.coord.longitude
+						this.addMarkers([{
+							name: '配送地址',
+							latitude: event.coord.latitude,
+							longitude: event.coord.longitude
+						}], false);
+						this.distance()
+					},
+					(event)=> {
+						// 失败
+						console.log(event)
+					});
+			},
+			// 切换站点
+			changeSite(id) {
+				this.selectSiteId = id
+				this.handleMarker(id)
+			},
+			// 添加marker
+			addMarkers(coordinates, type) {
+				// coordinates 所传点位
+				// type marker类型  false当前  true站点
+				let markers = []
+				coordinates.forEach((item, index) => {
+					markers.push({
+						id: type ? item.id : 1,
+						iconPath: type ? index ? '/static/home/location.png' :
+							'/static/home/location_a.png' : '/static/home/currentLocation.png',
+						width: 20,
+						height: 20,
+						// joinCluster: true, // 指定了该参数才会参与聚合
+						label: {
+							anchorX: type ? -40 : -25,
+							anchorY: -44,
+							content: item.name,
+							color: type?'#5f5f5f':'#fff',
+							borderColor: '#e6e6e6',
+							borderWidth: 1,
+							borderRadius: 3,
+							bgColor: type?'#fff': '#ffac67',
+							padding: 3,
+							fontSize: 12,
+							textAlign: 'center'
+						},
+						latitude: item.latitude,
+						longitude: item.longitude
+					})
+				})
+				this.markers = [...this.markers, ...markers]
+				this.$forceUpdate()
+			},
+			// 标记点点击事件
+			handleMarker(e) {
+				let id = e.detail ? e.detail.markerId : e;
+				if (id === 1) {
+					return true
+				}
+				this.markers.forEach((marker, index) => {
+					if (marker.id == id) {
+						console.log(id)
+						marker.iconPath = '/static/home/location_a.png'
+						this.includePoints = []
+						let latitudeJust = this.latitude >= Number(marker.latitude);
+						let longitudeJust = this.longitude >= Number(marker.longitude);
+						if (latitudeJust) {
+							this.includePoints.push({
+								latitude: this.latitude + 0.01,
+								longitude: longitudeJust ? (this.longitude + 0.01) : (this.longitude -
+									0.01)
+							})
+							this.includePoints.push({
+								latitude: Number(marker.latitude) - 0.01,
+								longitude: longitudeJust ? (Number(marker.longitude) - 0.01) : (Number(
+									marker.longitude) + 0.01)
+							})
+						} else {
+							this.includePoints.push({
+								latitude: this.latitude - 0.01,
+								longitude: longitudeJust ? (this.longitude + 0.01) : (this.longitude -
+									0.01)
+							})
+							this.includePoints.push({
+								latitude: Number(marker.latitude) + 0.01,
+								longitude: longitudeJust ? (Number(marker.longitude) - 0.01) : (Number(
+									marker.longitude) + 0.01)
+							})
+						}
+						console.log(this.includePoints)
+					} else if (marker.id !== 1) {
+						marker.iconPath = '/static/home/location.png'
+					}
+				})
+				this.markers = [...this.markers];
+			},
+			// 视野变化事件
+			regionChange(e) {
+
+			},
+			// 计算站点与定位距离
+			async distance() {
+				await this.sites.forEach((site, index) => {
+					var point1 = new plus.maps.Point(this.longitude, this.latitude);
+					var point2 = new plus.maps.Point(site.longitude, site.latitude);
+					plus.maps.Map.calculateDistance(point1, point2, (event) => {
+						this.sites[index].distance = event.distance
+						this.sites[index].distanceStr = (event.distance / 1000).toFixed(2) +
+							'km'; // 转换后的距离值
+						if (index == this.sites.length - 1) {
+							this.sites.sort((a, b) => {
+								var value1 = a.distance;
+								var value2 = b.distance;
+								return value1 > value2 ? 1 : -1;
+							})
+							this.selectSiteId = this.sites[0].id;
+						}
+					}, (e) => {
+						console.log(e)
+					});
+				})
+			},
+			// 确认选择站点
+			submit() {
+				uni.showLoading({
+					title: '数据提交中...'
+				})
+				
+				
+				setTimeout(()=>{
+					for (var i = 0; i < this.sites.length; i++) {
+						if(this.selectSiteId == this.sites[i].id){
+							this.$api.prePage().buffetInfo = this.sites[i];
+							return true
+						}
+					}
+					uni.hideLoading()
+					uni.navigateBack()
+				},1000)
+			}
+		}
+	}
+</script>
+
+<style>
+	.warp {
+		font-size: 24rpx;
+	}
+
+	.map {
+		width: 750rpx;
+		height: 500rpx;
+		margin-bottom: 20rpx;
+	}
+
+	.list {
+		flex-direction: row;
+		width: 710rpx;
+		height: 220rpx;
+		margin: 0 20rpx;
+		background-color: #fff;
+		border-radius: 10rpx;
+		padding: 20rpx;
+		margin-bottom: 20rpx;
+		border: 5rpx solid #e6e6e6;
+
+	}
+
+	.active {
+		border-color: #e26c39;
+	}
+
+	.list_l {
+		width: 450rpx;
+		margin-right: 40rpx;
+	}
+
+	.line {
+		margin-bottom: 10rpx;
+	}
+
+	.line-address {
+		height: 70rpx;
+	}
+
+	.name {
+		font-size: 32rpx;
+		margin-bottom: 15rpx;
+	}
+
+	.address {
+		font-size: 26rpx;
+		color: #757575;
+	}
+
+	.time {
+		font-size: 26rpx;
+		color: #757575;
+	}
+
+	.list_r {
+		justify-content: center;
+		align-items: center;
+	}
+
+	.go {
+		font-size: 26rpx;
+	}
+
+	.distance {
+		font-size: 26rpx;
+	}
+	.submit{
+		width: 710rpx;
+		margin-left: 20rpx;
+		padding-top: 15rpx;
+		padding-bottom: 15rpx;
+		background-color: #e26c39;
+		border-color: #e26c39;
+		border-radius: 10rpx;
+		justify-content: center;
+	}
+	.submit-hover{
+		background-color: #ce6233;
+	}
+	.white{
+		text-align: center;
+		color: #fff;
+		
+	}
+</style>

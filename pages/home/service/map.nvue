@@ -1,0 +1,229 @@
+<template>
+	<view class="warp">
+		<map id="map" class="map" theme="normal" :include-points="includePoints" :markers="markers" :scale="scale"
+			min-scale="3" max-scale="22" :latitude="latitude" :longitude="longitude" @markertap="handleMarker"
+			@labeltap="handleMarker" @regionchange="regionChange"></map>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				latitude: '32.059344',
+				longitude: '118.796624',
+				scale: 13,
+				sites: [{
+						name: '仁善养老机构',
+						id: '12',
+						latitude: '32.010538',
+						longitude: '118.732210'
+					},
+					{
+						name: '悦馨养老机构',
+						id: '13',
+						latitude: '31.988701',
+						longitude: '118.807569'
+					},
+				],
+				includePoints: [],
+				markers: []
+			}
+		},
+		onLoad() {
+			// 加载地图
+			uni.$on('loadSubNVue', (data) => {
+					if (data.state) {
+						this._mapContext = uni.createMapContext("map", this);
+						this._map = new plus.maps.Map("map");
+						this.addMarkers(this.sites, true)
+						this.getLocation()
+					}
+				}),
+				// 选中站点变化
+				uni.$on('changeSite', (data) => {
+					if (data.siteId) {
+						this.handleMarker(data.siteId)
+					}
+				})
+		},
+		// 页面返回
+		onBackPress(options) {
+			console.log(options)
+		},
+		methods: {
+			// 获取定位
+			getLocation() {
+				uni.showLoading({
+					title: '地址获取中...'
+				})
+				uni.getLocation({
+					type: 'gcj02',
+					geocode: true,
+					success: (res) => {
+						this.address = res.address
+						// 打开地图预览
+						this.latitude = res.latitude
+						this.longitude = res.longitude
+						this.addMarkers([{
+							name: '当前位置',
+							latitude: res.latitude,
+							longitude: res.longitude
+						}], false);
+						// this.moveToLocation(res.latitude, res.longitude);
+					},
+					fail: (res) => {
+						console.log(res)
+					},
+					complete: (res) => {
+						uni.hideLoading()
+					}
+				});
+			},
+			// 移动到当前位置
+			moveToLocation(lat, lon) {
+				console.log('移动')
+				this._mapContext.moveToLocation({
+					latitude: lat,
+					longitude: lon,
+					success: res => {
+						console.log(res)
+					},
+					fail: err => {
+						console.log(err)
+					}
+				})
+			},
+			// 添加marker
+			addMarkers(coordinates, type) {
+				// coordinates 所传点位
+				// type marker类型  false当前  true站点
+				let markers = []
+				coordinates.forEach((item, index) => {
+					markers.push({
+						id: type ? item.id : 1,
+						iconPath: type ? index ? '/static/home/location.png' :
+							'/static/home/location_a.png' : '/static/home/currentLocation.png',
+						width: 20,
+						height: 20,
+						// joinCluster: true, // 指定了该参数才会参与聚合
+						label: {
+							x: type ? -40 : -25,
+							y: -44,
+							content: item.name,
+							color: '#fff',
+							borderColor: '#e6e6e6',
+							borderWidth: 1,
+							borderRadius: 5,
+							bgColor: '#ffd39c',
+							padding: 3,
+							textAlign: 'center'
+						},
+						latitude: item.latitude,
+						longitude: item.longitude
+					})
+				})
+				this.markers = [...this.markers, ...markers]
+				this.$forceUpdate()
+			},
+			// 更新marker
+			updateMarker(lat, lon) {
+				// setTimeout(() => { // 延迟1.5秒后检查是否需要更新
+				// 	this.map.translateMarker({
+				// 		markerId: 1,
+				// 		destination: {
+				// 			latitude: lineArr[i].latitude,
+				// 			longitude: lineArr[i].longitude
+				// 		},
+				// 		autoRotate: false,
+				// 		duration: 1000
+				// 	}, ret => {
+				// 		testPolyline[0].color = "#336688";
+				// 		console.log(JSON.stringify(ret));
+				// 		uni.showModal({
+				// 			content: JSON.stringify(ret)
+				// 		})
+				// 	});
+				// }, 1500);
+				setTimeout(() => {
+					console.log('开始')
+					this._mapContext.translateMarker({
+						markerId: 1,
+						destination: {
+							latitude: lat,
+							longitude: lon
+						},
+						duration: 1000,
+						animationEnd: (res) => {
+							console.log(res)
+						},
+						fail: (res) => {
+							console.log(res)
+						}
+					})
+				}, 3000)
+			},
+			// 标记点点击事件
+			handleMarker(e) {
+				let id = e.detail ? e.detail.markerId : e;
+				if (id === 1) {
+					return true
+				}
+				this.markers.forEach((marker, index) => {
+					if (marker.id == id) {
+						console.log(id)
+						uni.$emit('markerClick', {
+							siteId: id
+						})
+						marker.iconPath = '/static/home/location_a.png'
+						this.includePoints = []
+						let latitudeJust = this.latitude >= Number(marker.latitude);
+						let longitudeJust = this.longitude >= Number(marker.longitude);
+						if (latitudeJust) {
+							this.includePoints.push({
+								latitude: this.latitude + 0.008,
+								longitude: longitudeJust ? (this.longitude + 0.008) : (this.longitude -
+									0.008)
+							})
+							this.includePoints.push({
+								latitude: Number(marker.latitude) - 0.008,
+								longitude: longitudeJust ? (Number(marker.longitude) - 0.008) : (Number(
+									marker.longitude) + 0.008)
+							})
+						} else {
+							this.includePoints.push({
+								latitude: this.latitude - 0.008,
+								longitude: longitudeJust ? (this.longitude + 0.008) : (this.longitude -
+									0.008)
+							})
+							this.includePoints.push({
+								latitude: Number(marker.latitude) + 0.008,
+								longitude: longitudeJust ? (Number(marker.longitude) - 0.008) : (Number(
+									marker.longitude) + 0.008)
+							})
+						}
+						console.log(this.includePoints)
+					} else if (marker.id !== 1) {
+						marker.iconPath = '/static/home/location.png'
+					}
+				})
+				this.markers = [...this.markers];
+			},
+			// 视野变化事件
+			regionChange(e) {
+				this._mapContext.getCenterLocation({
+					success: (res) => {
+						this.updateMarker(res.latitude, res.longitude)
+					}
+				})
+			}
+		}
+	}
+</script>
+
+<style>
+	.map {
+		width: 710rpx;
+		height: 300px;
+	}
+</style>
