@@ -49,7 +49,7 @@
 			<u-tabs-swiper class="u-m-b-20" ref="tabs" :list="tabLists" :current="current" @change="tabsChange"
 				:is-scroll="false" swiperWidth="750" bar-height="0" active-color="#ff8049"></u-tabs-swiper>
 			<view class="endlong-swiper skeleton">
-				<swiper :current="swiperCurrent" @change="swiperChange" style="height: 240px">
+				<swiper :current="swiperCurrent" @change="swiperChange" style="height: 460rpx">
 					<swiper-item class="swiper-item" v-for="(item, index) in tabLists" :key="index">
 						<view v-if="!tabListLoading && endlongLists[index].length">
 							<view class="endlong-list" v-for="(list,indexL) in endlongLists[index]" :key="indexL" @click="detailTo(list.goods_sn)">
@@ -62,7 +62,6 @@
 									<view class="describe"><text>{{list.goods_desc || '商品简介'}}</text></view>
 									<view class="total_sales">已售<text
 											class="sale_text">{{list.total_sell_count || 0}}</text>件</view>
-									<view></view>
 									<view class="u-flex u-row-between">
 										<view class="u-flex">
 											<view class="price u-m-r-20">
@@ -363,66 +362,6 @@
 				.price {
 					color: $uni-text-color-main;
 				}
-			}
-		}
-
-		// 竖向列表
-		.endlong {
-			.endlong-list {
-				width: calc(100vw - 40rpx);
-				height: 220rpx;
-				margin: 0 auto 20rpx;
-				display: flex;
-				background-color: $uni-bg-color;
-				border-radius: 20rpx;
-				padding: 20rpx;
-
-				.left {
-					width: 180rpx;
-					margin-right: 20rpx;
-				}
-
-				.right {
-					width: calc(100% - 200rpx);
-
-					.name {}
-
-					.describe {
-						color: $uni-text-color-grey;
-						font-size: 26rpx;
-						margin-bottom: 10rpx;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						white-space: nowrap;
-					}
-
-					.total_sales {
-						font-size: $uni-font-size-sm;
-						margin-bottom: 14rpx;
-
-						.sale_text {
-							color: $uni-text-color-main;
-						}
-					}
-
-					.price {
-						font-size: $uni-font-size-lg;
-						color: $uni-text-color-main;
-					}
-
-					.market_price {
-						font-size: $uni-font-size-sm;
-						color: $uni-text-color-grey;
-						text-decoration: line-through;
-					}
-				}
-			}
-
-			.none {
-				height: 100%;
-				display: flex;
-				justify-content: center;
-				align-items: center;
 			}
 		}
 	}

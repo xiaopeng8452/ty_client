@@ -521,6 +521,17 @@ export default {
 	padding: 0 80rpx;
 }
 
+.u-size-small {
+	/* #ifndef APP-NVUE */
+	display: inline-flex;		
+	/* #endif */
+	width: auto;
+	font-size: 26rpx;
+	height: 70rpx;
+	line-height: 70rpx;
+	padding: 0 50rpx;
+}
+
 .u-size-mini {
 	/* #ifndef APP-NVUE */
 	display: inline-flex;		

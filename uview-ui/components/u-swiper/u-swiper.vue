@@ -25,7 +25,7 @@
 		</swiper>
 		<view class="u-swiper-indicator" :style="{
 				top: indicatorPos == 'topLeft' || indicatorPos == 'topCenter' || indicatorPos == 'topRight' ? '12rpx' : 'auto',
-				bottom: indicatorPos == 'bottomLeft' || indicatorPos == 'bottomCenter' || indicatorPos == 'bottomRight' ? '12rpx' : 'auto',
+				bottom: indicatorPos == 'bottomLeft' || indicatorPos == 'bottomCenter' || indicatorPos == 'bottomRight' ? bottomNumber : 'auto',
 				justifyContent: justifyContent,
 				padding: `0 ${effect3d ? '74rpx' : '24rpx'}`
 			}">
@@ -116,6 +116,11 @@
 			indicatorPos: {
 				type: String,
 				default: 'bottomCenter'
+			},
+			// 新增bottom距离
+			bottomNumber: {
+				type: String,
+				default: '12rpx'
 			},
 			// 是否开启缩放效果
 			effect3d: {

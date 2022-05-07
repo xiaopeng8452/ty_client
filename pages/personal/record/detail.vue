@@ -24,20 +24,23 @@
 				<view>
 					<view class="tit">服务次数</view>
 					<view class="val">
-						<u-count-to fontSize="32" color="#fff" :start-val="0" :end-val="serverInfo.times || 0"></u-count-to>
+						<u-count-to fontSize="32" color="#fff" :start-val="0" :end-val="serverInfo.times || 0">
+						</u-count-to>
 					</view>
 				</view>
 				<view>
 					<view class="tit">好评率</view>
 					<view class="val">
-						<u-count-to fontSize="32" color="#fff" :start-val="0" :end-val="serverInfo.rate * 100 || 0"></u-count-to>
+						<u-count-to fontSize="32" color="#fff" :start-val="0" :end-val="serverInfo.rate * 100 || 0">
+						</u-count-to>
 						<text>%</text>
 					</view>
 				</view>
 				<view>
 					<view class="tit">服务年数</view>
 					<view class="val">
-						<u-count-to fontSize="32" color="#fff" :start-val="0" :end-val="serverInfo.dates || 0"></u-count-to>
+						<u-count-to fontSize="32" color="#fff" :start-val="0" :end-val="serverInfo.dates || 0">
+						</u-count-to>
 						<text>年</text>
 					</view>
 				</view>
@@ -46,21 +49,19 @@
 		<view class="section">
 			<view class="u-item-title">费用明细</view>
 			<view class="costs">
-				<unicloud-db ref="udb" @load="handleLoad" v-slot:default="{data, loading, pagination, error, options}"
-					collection="expense-calendar,opendb-mall-goods" :where="{'user_id': '12'}">
 					<view class="lists u-skeleton" :scroll-y="true" @scrolltolower="scrollBottom">
 						<view v-if="!loading">
 							<view class="cost" v-for="(cost,index) in costs" :key="index">
 								<view class="cost_l">
 									<view class="cost_l_l">
-										<u-image width="80rpx" height="80rpx" :src="cost.icon" shape="circle"></u-image>
+										<u-image width="80rpx" height="80rpx" :src="cost.goods_thumb" shape="circle"></u-image>
 									</view>
 									<view class="cost_l_r">
 										<view class="u-m-b-8">
-											<text class="name">{{cost.name}}</text>
-											<text class="price">￥{{cost.price}}</text>
+											<text class="name">{{cost.name || '-'}}</text>
+											<text class="price">￥{{cost.price || 0}}</text>
 										</view>
-										<view class="describe">{{cost.goods_desc}}</view>
+										<view class="describe">{{cost.goods_desc || '-'}}</view>
 									</view>
 								</view>
 								<view class="cost_r">
@@ -74,43 +75,55 @@
 					</view>
 					<!--引用组件-->
 					<u-skeleton :loading="loading" :animation="true" elColor="#eaeaea" bgColor="#fff"></u-skeleton>
-				</unicloud-db>
 			</view>
 		</view>
 		<view class="footer">
-			<u-button type="warning" :ripple="true" ripple-bg-color="rgba(255,255,255,.3)"
-				@click="navTo('/pages/personal/record/detail')">客户签名查看</u-button>
+			<u-button type="warning" :ripple="true" ripple-bg-color="rgba(255,255,255,.3)" @click="openSign">客户签名查看
+			</u-button>
+			<u-popup v-model="signatureShow" mode="center" border-radius="14" closeable>
+				<view>
+					人生若只如初见，何事秋风悲画扇
+				</view>
+			</u-popup>
 		</view>
 	</view>
 </template>
 
 <script>
+	const db = uniCloud.database()
 	export default {
 		data() {
 			return {
+				loading: false,
 				src: 'https://preview.qiantucdn.com/58pic/36/30/79/87b58PIC1K30f9gb37aYr_PIC2018.jpg!w1024_new_0',
-				serverInfo:{},
-				costs: []
+				serverInfo: {},
+				costs: [],
+				levelEnum:[],
+				signatureShow: false
 			}
 		},
-		 onLoad(options) {
+		onLoad(options) {
 			let spId = options.spId || 0;
-			let goodId = options.goodId || '';
-			this.costs = JSON.parse(decodeURIComponent(goodId))
+			let goods = options.goodId || [];
+			this.loading = true
+			setTimeout(()=>{
+				this.costs = JSON.parse(decodeURIComponent(goods))
+				this.loading = false
+				console.log(this.costs)
+			},1000)
 			this.getServerInfo(spId);
 		},
 		methods: {
-			handleLoad(data, ended) {
-				this.loadMoreStatus = ended ? 'nomore' : 'loadmore';
-			},
 			// 获取服务人员基本信息
-			async getServerInfo(spId){
-				const db = uniCloud.database();
+			async getServerInfo(spId) {
 				let res = await db.collection('service-personnel').where({
-				  sp_id: spId
+					sp_id: spId
 				}).get()
 				this.serverInfo = res.result.data[0] || {};
-				
+			},
+			// scroll-view滚动到底部触发
+			scrollBottom() {
+				this.$refs.udb.loadMore()
 			},
 			// 路由跳转
 			navTo(url) {
@@ -125,6 +138,10 @@
 						})
 					}
 				})
+			},
+			// 打开签名弹窗
+			openSign() {
+				this.signatureShow = true
 			}
 		}
 	}
@@ -152,6 +169,7 @@
 
 				.right {
 					height: 210rpx;
+
 					.block {
 						margin-bottom: 10rpx;
 
@@ -188,10 +206,12 @@
 				background-color: rgba(255, 255, 255, .3);
 				display: flex;
 				justify-content: space-around;
-				>view{
+
+				>view {
 					flex: 1;
 					text-align: center;
 				}
+
 				.tit {
 					font-family: misansNormal;
 					font-size: $uni-font-size-sm;
@@ -230,6 +250,7 @@
 					padding: 15rpx 0;
 					border-bottom: 1rpx solid $border-color-light;
 					margin-bottom: 20rpx;
+
 					&:last-child {
 						border-bottom-width: 0;
 						margin-bottom: 0;
@@ -247,11 +268,15 @@
 							.name {
 								margin-right: 20rpx;
 								font-family: misansBold;
+								height: $ty-height;
+								line-height: $ty-height;
 							}
 
 							.price {
 								font-family: misansNormal;
 								color: $uni-text-color-main;
+								height: $ty-height;
+								line-height: $ty-height;
 							}
 
 							.describe {
@@ -260,7 +285,7 @@
 								color: $uni-text-color-grey;
 								font-size: $uni-font-size-sm;
 								overflow: hidden;
-								text-overflow:ellipsis;
+								text-overflow: ellipsis;
 								white-space: nowrap;
 							}
 						}

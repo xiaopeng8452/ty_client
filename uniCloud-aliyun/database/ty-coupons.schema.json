@@ -1,0 +1,92 @@
+{
+	"bsonType": "object",
+	"required": ["name", "type", "describe", "expire_time", "create_time"],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": false
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"name": {
+			"bsonType": "string",
+			"description": "优惠券名称",
+			"title": "优惠券名",
+			"trim": "both"
+		},
+		"type": {
+			"bsonType": "int",
+			"description": "优惠券类型,不可重复",
+			"title": "优惠券类型",
+			"enum": [{
+				"value": 0,
+				"text": "返现"
+			}, {
+				"value": 1,
+				"text": "折扣"
+			}, {
+				"value": 2,
+				"text": "满减"
+			}, {
+				"value": 3,
+				"text": "免单"
+			}]
+		},
+		"describe": {
+			"bsonType": "string",
+			"description": "优惠券基本信息",
+			"title": "优惠券描述",
+			"trim": "both"
+		},
+		"redeem_code": {
+			"bsonType": "string",
+			"title": "兑换码",
+			"description": "优惠券兑换码"
+		},
+		"user_id": {
+			"bsonType": "string",
+			"title": "归属人",
+			"description": "优惠券归属人，uni-id-user._id"
+		},
+		"back_amount": {
+			"bsonType": "int",
+			"description": "返现比例，type为0时有值，0-1",
+			"title": "返现比例"
+		},
+		"amount": {
+			"bsonType": "int",
+			"title": "优惠金额",
+			"description": "优惠金额，type为2时有值"
+		},
+		"discount": {
+			"bsonType": "int",
+			"description": "折扣比例，type为1时有值",
+			"title": "折扣"
+		},
+		"times": {
+			"bsonType": "bool",
+			"description": "当前优惠券是否0元支付，type为3时为true，其他未false",
+			"title": "是否免单"
+		},
+		"expire_date": {
+			"bsonType": "timestamp",
+			"description": "优惠券到期时间",
+			"title": "到期时间"
+		},
+		"change_time": {
+			"bsonType": "timestamp",
+			"description": "优惠券使用兑换码兑换时间",
+			"title": "兑换日期"
+		},
+		"create_time": {
+			"bsonType": "timestamp",
+			"label": "创建时间",
+			"defaultValue": {
+				"$env": "now"
+			}
+		}
+	}
+}

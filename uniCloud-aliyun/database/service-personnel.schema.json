@@ -1,6 +1,6 @@
 {
 	"bsonType": "object",
-	"required": ["name", "sp_id", "level", "describe", "area", "type"],
+	"required": ["name", "sp_id", "level", "describe", "area", "type", "times", "rate", "dates"],
 	"permission": {
 		"read": true,
 		"create": false,
@@ -68,6 +68,21 @@
 				"value": 3,
 				"text": "养生"
 			}]
+		},
+		"times": {
+			"bsonType": "int",
+			"description": "当前人员服务次数，每次完成+1",
+			"title": "服务次数"
+		},
+		"rate": {
+			"bsonType": "int",
+			"description": "好评率，每次评价完成计算",
+			"title": "好评率"
+		},
+		"dates": {
+			"bsonType": "int",
+			"description": "服务年限，定时器自动计算",
+			"title": "服务年限"
 		}
 	}
 }

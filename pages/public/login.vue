@@ -38,7 +38,7 @@
 						</view>
 					</view>
 				</view>
-			</view>
+			</view>                                  
 			<view class="user-agree">
 				<u-checkbox-group>
 					<u-checkbox v-model="privacySwitch" class="text" label-size="28">请阅读并选择<text class="import">隐私政策</text>
@@ -67,50 +67,55 @@
 			uni.getProvider({
 				service: 'oauth',
 				success: (result) => {
-					this.providerList = result.provider.map((value) => {
-						let providerName = '';
-						let providerImg = '';
-						switch (value) {
-							case 'weixin':
-								providerName = '微信登录',
-									providerImg = '/static/temp/share_wechat.png'
-								break;
-							case 'qq':
-								providerName = 'QQ登录'
-								providerImg = '/static/temp/share_qq.png'
-								break;
-							case 'sinaweibo':
-								providerName = '微博登录'
-								providerImg = '/static/temp/share_web.png'
-								break;
-							case 'xiaomi':
-								providerName = '小米登录'
-								providerImg = ''
-								break;
-							case 'alipay':
-								providerName = '支付宝登录'
-								providerImg = ''
-								break;
-							case 'baidu':
-								providerName = '百度登录'
-								providerImg = ''
-								break;
-							case 'toutiao':
-								providerName = '头条登录'
-								providerImg = ''
-								break;
-							case 'apple':
-								providerName = '苹果登录'
-								providerImg = ''
-								break;
-						}
-						return {
-							name: providerName,
-							id: value,
-							img: providerImg
-						}
-					});
-
+					this.providerList = [
+						{name: 'QQ登录', img: '/static/temp/share_qq.png', id: 'qq'},
+						{name: '微信登录', img: '/static/temp/share_wechat.png', id: 'weixin'},
+						{name: '微博登录', img: '/static/temp/share_web.png', id: 'sinaweibo'},
+					]
+					// this.providerList = result.provider.map((value) => {
+					// 	let providerName = '';
+					// 	let providerImg = '';
+					// 	switch (value) {
+					// 		case 'weixin':
+					// 			providerName = '微信登录',
+					// 				providerImg = '/static/temp/share_wechat.png'
+					// 			break;
+					// 		case 'qq':
+					// 			providerName = 'QQ登录'
+					// 			providerImg = '/static/temp/share_qq.png'
+					// 			break;
+					// 		case 'sinaweibo':
+					// 			providerName = '微博登录'
+					// 			providerImg = '/static/temp/share_web.png'
+					// 			break;
+					// 		case 'xiaomi':
+					// 			providerName = '小米登录'
+					// 			providerImg = ''
+					// 			break;
+					// 		case 'alipay':
+					// 			providerName = '支付宝登录'
+					// 			providerImg = ''
+					// 			break;
+					// 		case 'baidu':
+					// 			providerName = '百度登录'
+					// 			providerImg = ''
+					// 			break;
+					// 		case 'toutiao':
+					// 			providerName = '头条登录'
+					// 			providerImg = ''
+					// 			break;
+					// 		case 'apple':
+					// 			providerName = '苹果登录'
+					// 			providerImg = ''
+					// 			break;
+					// 	}
+					// 	return {
+					// 		name: providerName,
+					// 		id: value,
+					// 		img: providerImg
+					// 	}
+					// });
+					console.log(this.providerList)
 				},
 				fail: (error) => {
 					console.log('获取登录通道失败', error);
@@ -171,7 +176,7 @@
 										uni.switchTab({
 											url: '/pages/tabbar/home'
 										});
-									}, 400)
+									}, 100)
 								} else {
 									this.$refs.uToast.show({
 										title: '账号密码错误',
@@ -228,7 +233,7 @@
 		.logo-head {
 			display: flex;
 			width: 100%;
-			height: 40vh;
+			height: 34vh;
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
@@ -296,15 +301,15 @@
 				line-height: 90upx;
 				background-color: #7cc1e0;
 				background-image: linear-gradient(to bottom, #8acee0 10%, #7cc1e0 45%, #72b5cf 90%);
-				box-shadow: 0 5upx 15upx #737373;
-
+				box-shadow: 0 2rpx 10upx #737373;
+				transition: all .6s;
 				&:after {
 					border: 1px solid rgba(164, 169, 168, 0.2);
 				}
 
 				&[disabled] {
 					background-color: #6babc7;
-					background-image: linear-gradient(to bottom, #b1d4dc 10%, #6babc7 45%, #8ab6c7 90%);
+					background-image: linear-gradient(to bottom, #9ecfdc 10%, #6babc7 45%, #8ab6c7 90%);
 				}
 			}
 
@@ -338,14 +343,13 @@
 					justify-content: space-around;
 					.other-login-list {
 						flex: 1;
-
 						.other-login-img {
 							width: 100%;
 							margin-bottom: 10upx;
 						}
 
 						.other-login-text {
-							/* font-size: 20upx; */
+							font-size: $uni-font-size-sm;
 							color: #b5b5b5;
 							text-align: center;
 						}
@@ -364,9 +368,9 @@
 			}
 
 			.user-agree {
-				position: absolute;
+				position: fixed;
 				left: 50%;
-				bottom: 30rpx;
+				bottom: 20rpx;
 				transform: translate(-50%, -50%);
 
 				.text {

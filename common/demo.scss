@@ -83,4 +83,156 @@ text {
 	border-radius: 10px;
 	background-color: $u-content-color;
 }
+
 /* end--演示页面使用的统一样式--end */
+
+// 竖向列表
+.endlong {
+	.none {
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+}
+.endlong-list {
+	width: calc(100vw - 40rpx);
+	height: 220rpx;
+	margin: 0 auto 20rpx;
+	display: flex;
+	background-color: $uni-bg-color;
+	border-radius: 20rpx;
+	padding: 20rpx;
+
+	.left {
+		width: 180rpx;
+		margin-right: 20rpx;
+	}
+
+	.right {
+		width: calc(100% - 200rpx);
+
+		.name {}
+
+		.describe {
+			color: $uni-text-color-grey;
+			font-size: 26rpx;
+			margin-bottom: 10rpx;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.total_sales {
+			font-size: $uni-font-size-sm;
+			margin-bottom: 14rpx;
+
+			.sale_text {
+				color: $uni-text-color-main;
+			}
+		}
+
+		.price {
+			font-size: $uni-font-size-lg;
+			color: $uni-text-color-main;
+		}
+
+		.market_price {
+			font-size: $uni-font-size-sm;
+			color: $uni-text-color-grey;
+			text-decoration: line-through;
+		}
+	}
+}
+
+/* 自增u-card */
+.card{
+	width: calc(100vw - 40rpx);
+	margin: 0 20rpx;
+	background-color: $uni-bg-color;
+	border-radius: 20rpx;
+	padding: 30rpx;
+	.title{
+		color: $font-color-light;
+		font-size: 22rpx;
+		margin-bottom: $uni-spacing-row-sm;
+	}
+	.value{
+		.date{
+			
+		}
+		.week{
+			font-size: 20rpx;
+		}
+	}
+	.right{
+		color: $font-color-light;
+		margin-left: $uni-spacing-row-sm;
+	}
+}
+
+.transition {
+	opacity: 1 !important;
+	transition: all .7s;
+}
+@keyframes opacityShow {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.warp-bottom{
+	display: flex;
+	justify-content: space-between;
+	position: fixed;
+	width: calc(100vw - 40rpx);
+	bottom: 30rpx;
+	left: $uni-spacing-row-base;
+	background-color: $uni-bg-color;
+	padding: $uni-spacing-row-sm 0;
+	border-radius: 20rpx;
+	box-shadow: 2rpx 2rpx 4rpx #8b8b8b;
+	.tags{
+		display: flex;
+		width: 120rpx;
+		justify-content: center;
+		.tag{
+			text-align: center;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			.text{
+				font-size: 22rpx;
+				color: $font-color-dark;
+			}
+		}
+	}
+	.buttons{
+		width: calc(100vw - 120rpx);
+		display: flex;
+		justify-content: flex-end;
+		.button{
+			margin-left: 0;
+			margin-right: $uni-spacing-row-sm;
+		}
+	}
+}
+
+
+// fi
+.fixed-btn{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: fixed;
+	width: 100rpx;
+	height: 100rpx;
+	right: 60rpx;
+	bottom: 60rpx;
+	background-color: $uni-bg-color-main;
+	border-radius: $uni-border-radius-circle;
+	box-shadow: 0 0 5rpx $uni-bg-color-mask;
+}

@@ -4,7 +4,7 @@
 		<view class="popup-title">
 			<text>分享</text>
 		</view>
-		<u-row class="u-m-t-30 u-m-b-40" gutter="16" justify="around">
+		<u-row class="u-m-t-40 u-m-b-50" gutter="16" justify="around">
 			<u-col span="3" v-for="(list,index) in shareLists" :key="index" style="touch-action: none" @click="open(list)">
 				<view class="u-m-b-10">
 					<u-image width="100%" height="80rpx" :src="list.img" mode="aspectFit"></u-image>

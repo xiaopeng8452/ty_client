@@ -5,7 +5,7 @@
 			<!--  where="goods_id.user_id == userId" -->
 			<scroll-view class="lists u-skeleton" :scroll-y="true" @scrolltolower="scrollBottom">
 				<view v-if="!loading">
-					<view class="list animation" v-for="(item,index) in data" :style="{transitionDelay:index*.1 + 's'}"
+					<view class="list transition" v-for="(item,index) in data" :style="{transitionDelay:index*.25 + 's'}"
 						:key="index" @click="navTo(item.sp_id,item.goods_id)">
 						<view class="block">
 							<text class="tit">项目名称：</text>
@@ -53,11 +53,11 @@
 				this.$refs.udb.loadMore()
 			},
 			// 路由跳转
-			navTo(sp_id,good_id){
+			navTo(sp_id,goods){
 				// sp_id 服务人员id
-				// good_id 消费包含服务项目
+				// goods 消费包含服务项目
 				uni.navigateTo({
-				    url: `/pages/personal/record/detail?spId=${sp_id}&goodId=${encodeURIComponent(JSON.stringify(good_id))}`,
+				    url: `/pages/personal/record/detail?spId=${sp_id}&goodId=${encodeURIComponent(JSON.stringify(goods))}`,
 						success: (res)=>{
 							console.log('跳转消费记录详情页-成功')
 						},fail:(errRes)=>{
@@ -79,7 +79,7 @@
 		.lists {
 			.list {
 				opacity: 0;
-				height: 140rpx;
+				height: 130rpx;
 				position: relative;
 				background-color: $uni-bg-color;
 				margin-bottom: 20rpx;
@@ -89,7 +89,8 @@
 					position: relative;
 					font-weight: normal;
 					margin: 15rpx 0;
-
+					height: $ty-height;
+					line-height: $ty-height;
 					.tit {
 						color: $uni-text-color-grey;
 						font-family: misansNormal;
@@ -130,20 +131,7 @@
 					font-family: misansBold;
 				}
 
-				&.animation {
-					opacity: 1;
-					transition: all .8s;
-				}
 
-				@keyframes show {
-					from {
-						opacity: 0;
-					}
-
-					to {
-						opacity: 1;
-					}
-				}
 			}
 		}
 	}

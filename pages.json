@@ -21,19 +21,7 @@
 					"scrollIndicator":"none",
 					"titleNView": {
 						"backgroundColor": "#fafafa"
-					},
-					"subNVues": [{ //地图
-						"id": "map",
-						"path": "pages/home/service/map",
-						"type":"popup",
-						"style": {
-							"position": "popup",
-							"top": 200,
-							"left": 10,
-							"right": 10,
-							"height": "300"
-						}
-					}]
+					}
 				}
 			}
 		},
@@ -160,17 +148,27 @@
 						"navigationBarTitleText": "服务详情",
 						"app-plus":{
 							"titleNView": {
-								"backgroundColor": "#edf4fa"
+								"backgroundColor": "#edf4fa",
+								"buttons": [
+									{
+										"fontSrc": "/static/yticon.ttf",
+										"text": "\ue61e",
+										"fontSize": "24",
+										"color": "#303133",
+										"float": "right",
+										"background": "rgba(0,0,0,0)"
+									}
+								]
 							},
 							"bounce":"none"
 						}
 					}
 				},
-				// 详情2
+				// 服务下单
 				{
-					"path": "service/details",
+					"path": "service/creat",
 					"style": {
-						"navigationBarTitleText": "服务详情",
+						"navigationBarTitleText": "服务预约",
 						"app-plus":{
 							"titleNView": {
 								"backgroundColor": "#edf4fa"
@@ -186,9 +184,22 @@
 			"pages": [
 				// 个人主页
 				{
-					"path": "set",
+					"path": "home",
 					"style": {
 						"navigationBarTitleText": "个人主页",
+						"app-plus":{
+							"softinputMode": "adjustResize",
+							"titleNView": {
+								"backgroundColor": "#edf4fa"
+							}
+						}
+					}
+				},
+				// 设置中心
+				{
+					"path": "set",
+					"style": {
+						"navigationBarTitleText": "设置中心",
 						"app-plus":{
 							"softinputMode": "adjustResize",
 							"titleNView": {
@@ -203,8 +214,20 @@
 					"style": {
 						"navigationBarTitleText": "我的钱包",
 						"app-plus":{
+							"softinputMode": "adjustResize",
+							"bounce": "none",
 							"titleNView": {
-								"backgroundColor": "#edf4fa"
+								"backgroundColor": "#ffb552",
+								"buttons": [
+									{
+										"fontSrc": "/static/yticon.ttf",
+										"text": "\ue669",
+										"fontSize": "20",
+										"color": "#fff",
+										"float": "right",
+										"background": "rgba(0,0,0,0)"
+									}
+								]
 							}
 						}
 					}

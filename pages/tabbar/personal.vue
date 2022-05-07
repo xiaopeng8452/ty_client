@@ -3,7 +3,8 @@
 		<view class="head">
 			<view class="head-l">
 				<u-image class="portrait" width="120rpx" height="120rpx" shape="circle"
-					:src="userInfo.avatar || 'https://preview.qiantucdn.com/58pic/39/70/72/32Q58PICxZasUnNwucTGv_PIC2018.jpg!w1024_new_small'" @tag="previewAvatar">
+					:src="userInfo.avatar || 'https://preview.qiantucdn.com/58pic/39/70/72/32Q58PICxZasUnNwucTGv_PIC2018.jpg!w1024_new_small'"
+					@tap="previewAvatar">
 				</u-image>
 				<view>
 					<view class="name">{{userInfo.nickname || '未知人员'}}</view>
@@ -13,7 +14,7 @@
 					</view>
 				</view>
 			</view>
-			<view class="head-r" @click="navTo('/pages/personal/set')">
+			<view class="head-r" @click="navTo('/pages/personal/home')">
 				<u-icon class="u-m-r-10" name="man-add-fill" size="46"></u-icon>
 				<view>个人主页</view>
 			</view>
@@ -61,9 +62,10 @@
 				</u-row>
 			</view>
 			<u-cell-group>
-				<u-cell-item :iconStyle="{'color':'#85d3c6'}" icon="setting-fill" title="个人设置"></u-cell-item>
 				<u-cell-item :iconStyle="{'color':'#85d3c6'}" icon="integral-fill" title="会员等级" value="新版本">
 				</u-cell-item>
+				<u-cell-item :iconStyle="{'color':'#85d3c6'}" icon="list-dot" title="工具列表" value="5个" @tap="navTo()"></u-cell-item>
+				<u-cell-item :iconStyle="{'color':'#85d3c6'}" icon="setting-fill" title="个人设置" @click="navTo('/pages/personal/set')"></u-cell-item>
 			</u-cell-group>
 		</view>
 	</view>
@@ -114,19 +116,26 @@
 				}
 			},
 			// 预览图片
-			previewAvatar(){
+			previewAvatar() {
+				console.log(this.userInfo.avatar)
 				uni.previewImage({
-							urls: this.userInfo.avatar,
-							longPressActions: {
-								itemList: ['发送给朋友', '保存图片', '收藏'],
-								success: (data)=> {
-									console.log('选中了第' + (data.tapIndex + 1) + '个按钮,第' + (data.index + 1) + '张图片');
-								},
-								fail: (err)=> {
-									console.log(err.errMsg);
+					urls: [this.userInfo.avatar],
+					longPressActions: {
+						itemList: ['保存图片'],
+						success: (data) => {
+							console.log('选中了第' + (data.tapIndex + 1) + '个按钮,第' + (data.index + 1) + '张图片');
+							uni.saveImageToPhotosAlbum({
+								filePath: this.userInfo.avatar,
+								success: function() {
+									console.log('save success');
 								}
-							}
-						});
+							});
+						},
+						fail: (err) => {
+							console.log(err.errMsg);
+						}
+					}
+				});
 			},
 		}
 	}

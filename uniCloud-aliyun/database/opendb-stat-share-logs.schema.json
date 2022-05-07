@@ -3,7 +3,7 @@
 	"required": ["appid", "version", "channel", "uuid"],
 	"permission": {
 		"read": false,
-		"create": false,
+		"create": true,
 		"update": false,
 		"delete": false
 	},
